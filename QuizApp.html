@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Enterprise Architecture Quiz</title>
+<style>
+  /* Poppins font */
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg:#f3f5f7;
+    --card:#ffffff;
+    --muted:#6c757d;
+    --primary:#1f6feb;
+    --success:#2ea44f;
+    --danger:#e55353;
+  }
+ 
+  body{
+    margin:0;
+    font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    background:var(--bg);
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:20px 12px;
+    color:#222;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    min-height:100vh;
+  }
+
+  .container{
+    width:100%;
+    max-width:760px;
+  }
+
+  .card{
+    background:var(--card);
+    border-radius:12px;
+    box-shadow:0 8px 30px rgba(15,23,42,0.08);
+    padding:24px 20px;
+    overflow:hidden;
+  }
+
+  header{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:12px;
+    margin-bottom:18px;
+  }
+
+  h1{
+    margin:0;
+    font-size:20px;
+    font-weight:600;
+    color:#0b1220;
+    line-height:1.3;
+  }
+
+  .meta{
+    text-align:left;
+    font-size:13px;
+    color:var(--muted);
+  }
+
+  /* progress bar */
+  .progress-wrap{
+    margin:12px 0 22px 0;
+  }
+  .progress {
+    height:10px;
+    background:#eceff1;
+    border-radius:999px;
+    overflow:hidden;
+  }
+  .progress > .bar {
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,var(--primary), #5aa0ff);
+    transition:width .45s ease;
+  }
+
+  /* question area */
+  .question-area{
+    display:block;
+    text-align:left;
+  }
+
+  .definition {
+    background:#fbfdff;
+    border-radius:8px;
+    padding:18px;
+    border:1px solid #edf2f7;
+    margin-bottom:18px;
+    font-size:16px;
+    line-height:1.45;
+    color:#0f1724;
+  }
+
+  .prompt {
+    font-size:15px;
+    color:#1f2937;
+    font-weight:600;
+    margin-bottom:10px;
+  }
+
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .option-btn{
+    appearance:none;
+    border:1px solid #e6e9ee;
+    background:#fafbfc;
+    padding:14px 16px;
+    text-align:left;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:15px;
+    transition:all .18s ease;
+    box-shadow:none;
+    color:#111827;
+  }
+
+  .option-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 20px rgba(17,24,39,0.04);
+  }
+
+  .option-btn:disabled{
+    cursor:default;
+    opacity:0.95;
+  }
+
+  /* feedback states */
+  .option-btn.correct{
+    background: linear-gradient(180deg, rgba(46,164,79,0.12), rgba(46,164,79,0.08));
+    border-color: rgba(46,164,79,0.35);
+    box-shadow:0 4px 18px rgba(46,164,79,0.06);
+    color:var(--success);
+    font-weight:600;
+  }
+
+  .option-btn.wrong{
+    background: linear-gradient(180deg, rgba(229,83,83,0.08), rgba(229,83,83,0.04));
+    border-color: rgba(229,83,83,0.25);
+    box-shadow:0 4px 18px rgba(229,83,83,0.05);
+    color:var(--danger);
+    font-weight:600;
+  }
+
+  .small-muted{
+    font-size:13px;
+    color:var(--muted);
+    margin-top:12px;
+  }
+
+  .footer{
+    margin-top:20px;
+    text-align:center;
+    font-size:13px;
+    color:#475569;
+  }
+
+  /* responsive */
+  @media (max-width:520px){
+    .card{ padding:16px; }
+    h1{ font-size:18px; }
+    .definition{ font-size:14px; padding:14px; line-height:1.5; }
+    .option-btn{ padding:12px 14px; font-size:14px; }
+    .prompt{ font-size:14px; }
+  }
+
+  @media (min-width:521px){
+    header{
+      flex-direction:row;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .meta{
+      text-align:right;
+    }
+    h1{
+      font-size:22px;
+    }
+  }
+
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="card" role="main" aria-labelledby="title">
+      <header>
+        <div>
+          <h1 id="title">Enterprise Architecture Comprehensive Exam Quiz</h1>
+        </div>
+        <div class="meta">
+          <div id="qcount">Question 1 of 31</div>
+          <div class="small-muted">Pick the term that matches the definition</div>
+        </div>
+      </header>
+
+      <div class="progress-wrap">
+        <div class="progress" aria-hidden="true"><div class="bar" id="progressBar"></div></div>
+      </div>
+
+      <section class="question-area" id="questionArea">
+        <div class="prompt">Which term does this describe?</div>
+        <div class="definition" id="definitionText"></div>
+
+        <div class="options" id="optionsContainer" aria-live="polite"></div>
+
+        <div class="small-muted" id="feedbackText" style="visibility:hidden;"></div>
+      </section>
+
+      <div class="footer">
+        <div id="endMessage" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* === Data: 31 items (term + definition) === */
+const data = [
+  { term: "Knowledge Representation", def: "This depicts an enterprise architecture model in a specific manner based on the agreed perception of the individuals involved in the process." },
+  { term: "Knowledge Goals", def: "These are the goals under the modeling process of an enterprise architecture." },
+  { term: "Knowledge State", def: "This involves the condition and commitment of stakeholders on enterprise architecture." },
+  { term: "Knowledge Transformation", def: "This is the situation where knowledge passes through the modeling process while considering goals and guidelines." },
+  { term: "Central Representations", def: "These are the primary and essential models that are used in the transformation of knowledge." },
+
+  { term: "Establishing the purpose, scope, and focus", def: "It is a goal-driven activity wherein architects determine all possible stakeholders and the different purposes of the model in relation to the stakeholders. This is considered as a starting point in establishing a model." },
+  { term: "Selecting one or more viewpoints", def: "Models are created using different viewpoints that give a specific set of concepts and relations to be used during the modeling process. This serves as a guide in determining appropriate information to be included in the model." },
+  { term: "Creating and structuring the model", def: "This activity involves requirements gathering, such as appropriate information, to create, structure, and visualize an enterprise architecture model. Additional information can be acquired using interviews or discussions with stakeholders. Structuring reduces the visual complexity of a model." },
+  { term: "Visualizing the model", def: "Stakeholders and their needs must be considered in visualizing a model. Different viewpoints, text, and tables are also used as a starting point in visualizing a model. Central Model is an example of a way to visualize a model." },
+  { term: "Informing", def: "This involves the dissemination of information to all the stakeholders." },
+  { term: "Maintaining the model", def: "Enterprise architecture model must be kept up to date for it not to lose its value for the stakeholders. It is maintained to reflect changes in infrastructure, the business processes, or the enterprise products and/or services." },
+
+  { term: "Introduction", def: "Introduce a candidate element in a model. This is the act of placing a fresh term for a concept or relation within a model. The candidate element must be somehow relevant but not necessarily linked to the model. It may be refined or deleted later on." },
+  { term: "Refinement", def: "Refine an element in a model. Other than introducing new elements, refining can be done by adding specific details to existing elements." },
+  { term: "Abandoning", def: "Abandon a model element. This involves an explicit decision of eliminating or delete a concept or relation with proper documentation, to avoid the concept of 'lingering around.'" },
+  { term: "Abstraction", def: "Abstract from a concept or relation. The concept of abstraction is the opposite of refinement. In this activity, an architect decides whether information, that is available in the model, is to be left out or not." },
+  { term: "Translation", def: "Translate an element. This is the process of finding a suitable alternative for an element. Documentation is required in order to keep track of the existing relationship between models or contexts." },
+  { term: "Documentation", def: "Document modeling actions. This action involves the administration and documentation of all or some modeling actions, such as refinement and abstraction." },
+
+  { term: "Model", def: "This is an explicit and intellectual conception of real-life aspects based on a clearly defined purpose." },
+  { term: "Visualization", def: "This pertains to the form in which a model is presented." },
+
+  { term: "Inwards", def: "Towards the internal composition of the elements." },
+  { term: "Upwards", def: "Towards the elements that are supported by it." },
+  { term: "Downwards", def: "Towards its realization by other elements." },
+  { term: "Sideways", def: "Towards peer elements with which it cooperates." },
+
+  { term: "Use of Colors", def: "Color is a strong visual signal. It is a visual attribute that is strongly influenced by 'prior knowledge.' It can also increase the appeal of a diagram, but can also lead to contrary effects, such as confusion and distraction." },
+  { term: "Use of Texts", def: "Texts suggests proper interpretations, associations, and stimulates thinking. It also speeds up the creation of a proper mental state in modeling, while creating a good starting for the line of reasoning." },
+
+  { term: "Proximity", def: "People have the tendency to relate objects that are near to each other. Therefore, related objects should be placed near to each other. The proximity rule also applies to colors, wherein objects with the same color can indicate relationships between objects." },
+  { term: "Continuity", def: "People have the tendency to perceive a line as continuous establishing directions, based on their perspective. Therefore, lines forming a right angle should not be positioned next to each other in a model, to avoid confusion." },
+  { term: "Closure", def: "People have the tendency to perceive incomplete objects as complete and asymmetric objects as symmetric. Symmetry and regularity increase the readability of models and reduces perceived complexity." },
+  { term: "Common Fate", def: "People have the tendency to perceive different objects that move or function in a similar manner as a unit." },
+  { term: "Use of Layouts", def: "The layout aspects of a diagram include basic pattern, horizontal and vertical alignment, above/before positioning, symmetry, distance of objects, distribution and density objects and connectors." },
+  { term: "Use of Symbols", def: "The shapes of objects in a model usually match the intrinsic properties of the real-life objects." }
+];
+
+/* === Helpers & state === */
+const total = data.length;
+let qIndex = 0;
+let score = 0;
+
+const defEl = document.getElementById('definitionText');
+const optsEl = document.getElementById('optionsContainer');
+const progressBar = document.getElementById('progressBar');
+const qcountEl = document.getElementById('qcount');
+const feedbackText = document.getElementById('feedbackText');
+const endMessage = document.getElementById('endMessage');
+
+/* shuffle function */
+function shuffleArray(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+}
+
+/* create a set of options: correct + 3 random distinct other terms */
+function makeOptions(correctTerm){
+  const allTerms = data.map(d => d.term).filter(t => t !== correctTerm);
+  shuffleArray(allTerms);
+  const distractors = allTerms.slice(0,3);
+  const options = [correctTerm, ...distractors];
+  shuffleArray(options);
+  return options;
+}
+
+/* render current question */
+function renderQuestion(){
+  if(qIndex >= total){
+    showEnd();
+    return;
+  }
+
+  const item = data[qIndex];
+  defEl.textContent = item.def;
+  feedbackText.style.visibility = 'hidden';
+  qcountEl.textContent = `Question ${qIndex+1} of ${total}`;
+  progressBar.style.width = `${Math.round((qIndex/total)*100)}%`;
+
+  // options
+  const opts = makeOptions(item.term);
+  optsEl.innerHTML = '';
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.type = 'button';
+    btn.textContent = opt;
+    btn.setAttribute('aria-label', `Option: ${opt}`);
+    btn.addEventListener('click', () => handleAnswer(btn, opt, item.term));
+    optsEl.appendChild(btn);
+  });
+}
+
+/* handle selection: highlight and auto-advance */
+function handleAnswer(buttonEl, selectedTerm, correctTerm){
+  // disable all buttons immediately
+  const btns = optsEl.querySelectorAll('button');
+  btns.forEach(b => b.disabled = true);
+
+  if(selectedTerm === correctTerm){
+    // correct: highlight selected green
+    buttonEl.classList.add('correct');
+    score++;
+    feedbackText.textContent = 'Correct ✓';
+    feedbackText.style.visibility = 'visible';
+  } else {
+    // wrong: highlight selected red and show correct in green
+    buttonEl.classList.add('wrong');
+    feedbackText.textContent = 'Incorrect ✕';
+    feedbackText.style.visibility = 'visible';
+
+    // find correct button and mark
+    for(const b of btns){
+      if(b.textContent === correctTerm){
+        b.classList.add('correct');
+        break;
+      }
+    }
+  }
+
+  // auto-advance to next question
+  setTimeout(() => {
+    qIndex++;
+    renderQuestion();
+  }, 800);
+}
+
+function showEnd(){
+  progressBar.style.width = '100%';
+  defEl.textContent = '';
+  optsEl.innerHTML = '';
+  qcountEl.textContent = 'Exam complete';
+  const pct = Math.round((score/total)*100);
+  endMessage.style.display = 'block';
+  endMessage.innerHTML = `<strong>Exam Complete!</strong> You scored <strong>${score}</strong> out of <strong>${total}</strong> (${pct}%). ${pct>=70 ? 'Passed' : 'Failed'}.`;
+  
+  // add try again button
+  const tryAgainBtn = document.createElement('button');
+  tryAgainBtn.className = 'option-btn';
+  tryAgainBtn.style.background = 'linear-gradient(135deg, var(--primary), #5aa0ff)';
+  tryAgainBtn.style.color = '#fff';
+  tryAgainBtn.style.fontWeight = '600';
+  tryAgainBtn.style.marginTop = '20px';
+  tryAgainBtn.style.borderColor = 'var(--primary)';
+  tryAgainBtn.textContent = '↻ Try Again';
+  tryAgainBtn.addEventListener('click', () => {
+    location.reload();
+  });
+  optsEl.appendChild(tryAgainBtn);
+}
+
+/* initial shuffle of question order to vary quiz run */
+shuffleArray(data);
+renderQuestion();
+
+</script>
+</body>
+</html>
