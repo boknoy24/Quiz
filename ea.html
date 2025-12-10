@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enterprise Architecture Quiz</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+      padding: 48px;
+      max-width: 640px;
+      width: 100%;
+      border: 4px solid #1f2937;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #1f2937;
+      color: white;
+      padding: 8px 24px;
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 32px;
+    }
+
+    .badge.indigo {
+      background: #4f46e5;
+      margin-bottom: 24px;
+    }
+
+    .title-box {
+      background: #f9fafb;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 32px;
+      border: 2px solid #1f2937;
+      text-align: center;
+    }
+
+    h1, h2 {
+      color: #1f2937;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .btn {
+      width: 100%;
+      background: #1f2937;
+      color: white;
+      padding: 16px;
+      border-radius: 16px;
+      font-size: 18px;
+      font-weight: 600;
+      border: 2px solid #1f2937;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background-color 0.2s;
+    }
+
+    .btn:hover {
+      background: #374151;
+    }
+
+    .answers {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .answer-btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      border: 2px solid #d1d5db;
+      background: white;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      text-align: left;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .answer-btn:hover:not(:disabled) {
+      background: #f9fafb;
+    }
+
+    .answer-btn:disabled {
+      cursor: not-allowed;
+    }
+
+    .answer-number {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #1f2937;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .answer-btn.correct {
+      background: #dcfce7;
+      border-color: #22c55e;
+    }
+
+    .answer-btn.incorrect {
+      background: #fee2e2;
+      border-color: #ef4444;
+    }
+
+    .answer-btn.neutral {
+      background: #f3f4f6;
+      border-color: #d1d5db;
+    }
+
+    .score-display {
+      text-align: center;
+    }
+
+    .percentage {
+      font-size: 72px;
+      font-weight: bold;
+      color: #4f46e5;
+      margin-bottom: 8px;
+    }
+
+    .score-text {
+      font-size: 20px;
+      color: #6b7280;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 32px 24px;
+      }
+      
+      h1, h2 {
+        font-size: 20px;
+      }
+      
+      .percentage {
+        font-size: 56px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Start Screen -->
+    <div id="startScreen">
+      <div class="badge">Reviewer</div>
+      <div class="title-box">
+        <h1>Enterprise Architecture</h1>
+      </div>
+      <button class="btn" onclick="startQuiz()">
+        Start
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quizScreen" class="hidden">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <div class="badge indigo">
+          Question <span id="currentQ">1</span> of <span id="totalQ">35</span>
+        </div>
+      </div>
+      <div class="title-box" style="background: #eef2ff;">
+        <h2 id="questionText"></h2>
+      </div>
+      <div id="correctAnswerBox" class="hidden" style="background: #dcfce7; border: 2px solid #22c55e; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+        <div style="font-weight: 600; color: #15803d; margin-bottom: 8px;">✓ Correct Answer:</div>
+        <div id="correctAnswerText" style="color: #166534; font-size: 16px;"></div>
+      </div>
+      <div class="answers" id="answersContainer"></div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="resultsScreen" class="hidden">
+      <div class="title-box" style="background: #eef2ff;">
+        <h2 style="margin-bottom: 24px;">Score:</h2>
+        <div class="score-display">
+          <div class="percentage" id="percentageScore">0%</div>
+          <div class="score-text">
+            <span id="correctScore">0</span> out of <span id="totalScore">35</span> correct
+          </div>
+        </div>
+      </div>
+      <button class="btn" onclick="tryAgain()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="1 4 1 10 7 10"></polyline>
+          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+        </svg>
+        Try Again
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "What is a stakeholder in enterprise architecture?",
+        answers: [
+          "A software system",
+          "An individual or group with interest in the architecture outcome",
+          "A business process",
+          "A technical node"
+        ],
+        correct: 1
+      },
+      {
+        question: "A driver in enterprise architecture is:",
+        answers: [
+          "A person who drives a vehicle",
+          "A condition that motivates the organization to achieve goals",
+          "A software application",
+          "A business rule"
+        ],
+        correct: 1
+      },
+      {
+        question: "Which element represents a high-level intent or goal?",
+        answers: ["Requirement", "Goal", "Principle", "Value"],
+        correct: 1
+      },
+      {
+        question: "What is a business actor?",
+        answers: [
+          "A software component",
+          "A physical device",
+          "A business entity capable of performing behavior",
+          "A business goal"
+        ],
+        correct: 2
+      },
+      {
+        question: "A business service is:",
+        answers: [
+          "A physical machine",
+          "A collection of business rules",
+          "An explicitly defined perceptible business behavior",
+          "A project plan"
+        ],
+        correct: 2
+      },
+      {
+        question: "Which layer focuses on physical IT infrastructure?",
+        answers: [
+          "Business Layer",
+          "Application Layer",
+          "Technology Layer",
+          "Motivation Layer"
+        ],
+        correct: 2
+      },
+      {
+        question: "What is a technology node?",
+        answers: [
+          "A person in a business process",
+          "A computational or physical resource",
+          "A contract with a customer",
+          "A business object"
+        ],
+        correct: 1
+      },
+      {
+        question: "A plateau refers to:",
+        answers: [
+          "A change in requirements",
+          "A relatively stable state of an enterprise architecture",
+          "A failed system deployment",
+          "A business goal"
+        ],
+        correct: 1
+      },
+      {
+        question: "A work package is:",
+        answers: [
+          "A type of business object",
+          "A set of actions to achieve a specific goal",
+          "A hardware device",
+          "A software function"
+        ],
+        correct: 1
+      },
+      {
+        question: "Which is an example of application behavior?",
+        answers: [
+          "Data storage",
+          "Application process",
+          "Business actor",
+          "Facility"
+        ],
+        correct: 1
+      },
+      {
+        question: "Which is a fundamental guideline for modeling?",
+        answers: [
+          "Include all possible elements",
+          "Use irrelevant elements for completeness",
+          "Keep abstraction levels consistent",
+          "Ignore stakeholder needs"
+        ],
+        correct: 2
+      },
+      {
+        question: "In Gestalt theory, 'Proximity' means:",
+        answers: [
+          "Objects far apart are related",
+          "Objects close together are perceived as related",
+          "Color is unimportant",
+          "Text size determines relevance"
+        ],
+        correct: 1
+      },
+      {
+        question: "Which is a common modeling action?",
+        answers: [
+          "Deleting a model permanently without documentation",
+          "Refinement",
+          "Ignoring errors",
+          "Estimating project cost"
+        ],
+        correct: 1
+      },
+      {
+        question: "The purpose of functional analysis is to:",
+        answers: [
+          "Deploy hardware",
+          "Understand functional aspects of architecture",
+          "Measure financial loss",
+          "Create contracts"
+        ],
+        correct: 1
+      },
+      {
+        question: "Risk analysis helps architects to:",
+        answers: [
+          "Find coding errors",
+          "Identify and manage potential problems",
+          "Measure throughput",
+          "Visualize stakeholders"
+        ],
+        correct: 1
+      },
+      {
+        question: "A negligible risk means:",
+        answers: [
+          "Transformation effort will fail",
+          "Minimal impact on the ability to deliver products/services",
+          "Severe financial loss",
+          "High failure probability"
+        ],
+        correct: 1
+      },
+      {
+        question: "Which performance measure is linked to a system view?",
+        answers: [
+          "Completion time",
+          "Throughput",
+          "Response time",
+          "Utilization"
+        ],
+        correct: 1
+      },
+      {
+        question: "Application component is:",
+        answers: [
+          "A physical facility",
+          "A modular and replaceable application unit",
+          "A business actor",
+          "A contract"
+        ],
+        correct: 1
+      },
+      {
+        question: "Which viewpoint shows how business services are realized by processes?",
+        answers: [
+          "Product Viewpoint",
+          "Service Realization Viewpoint",
+          "Actor Association Viewpoint",
+          "Technology Usage Viewpoint"
+        ],
+        correct: 1
+      },
+      {
+        question: "Visualization refers to:",
+        answers: [
+          "Abstract model concepts",
+          "Presentation form of a model",
+          "Risk evaluation",
+          "Work package outcome"
+        ],
+        correct: 1
+      },
+      {
+        question: "In quantitative analysis, which is NOT measured?",
+        answers: [
+          "Reliability",
+          "Cost",
+          "Utilization",
+          "Employee satisfaction"
+        ],
+        correct: 3
+      },
+      {
+        question: "A business process is:",
+        answers: [
+          "A sequence of business behaviors achieving a specific outcome",
+          "A physical IT device",
+          "A system software",
+          "A business contract"
+        ],
+        correct: 0
+      },
+      {
+        question: "What is a business object?",
+        answers: [
+          "A data type used for automated processing",
+          "A representation of information or conceptual elements in a business",
+          "A contract with customers",
+          "A network node"
+        ],
+        correct: 1
+      },
+      {
+        question: "Which type of analysis uses event simulations for business layer evaluation?",
+        answers: [
+          "Quantitative Analysis",
+          "Performance Analysis",
+          "Risk Analysis",
+          "Static Analysis"
+        ],
+        correct: 1
+      },
+      {
+        question: "A work package delivers:",
+        answers: [
+          "Conceptual knowledge only",
+          "A precisely defined outcome",
+          "Risk assessment reports",
+          "Hardware installation"
+        ],
+        correct: 1
+      },
+      {
+        question: "In modeling, \"abstraction\" means:",
+        answers: [
+          "Adding unnecessary details",
+          "Leaving out information",
+          "Introducing new elements",
+          "Documenting refinement"
+        ],
+        correct: 1
+      },
+      {
+        question: "Actor Association Viewpoint focuses on:",
+        answers: [
+          "External dependencies and collaborations",
+          "Business function structure",
+          "Application usage",
+          "Technology deployment"
+        ],
+        correct: 0
+      },
+      {
+        question: "A product in enterprise architecture is:",
+        answers: [
+          "A tangible physical object only",
+          "A collection of services and/or passive elements offered to customers",
+          "A software component only",
+          "A work package"
+        ],
+        correct: 1
+      },
+      {
+        question: "The guideline \"be economical in models\" means:",
+        answers: [
+          "Include all possible elements",
+          "Model only relevant concepts and relations",
+          "Focus only on software",
+          "Avoid stakeholder input"
+        ],
+        correct: 1
+      },
+      {
+        question: "Which is an example of dynamic analysis?",
+        answers: [
+          "UML class diagram checking",
+          "Process behavior analysis using formal methods",
+          "Documenting work packages",
+          "Creating a contract"
+        ],
+        correct: 1
+      },
+      {
+        question: "A model is the same as its visualization.",
+        answers: ["True", "False", "Sometimes", "Depends on layers"],
+        correct: 1
+      },
+      {
+        question: "Technology services are visible units of functionality provided by nodes.",
+        answers: [
+          "True",
+          "False",
+          "Sometimes",
+          "Depends on architecture"
+        ],
+        correct: 0
+      },
+      {
+        question: "Implementation and deployment viewpoint shows how applications are deployed on infrastructure.",
+        answers: [
+          "True",
+          "False",
+          "Sometimes",
+          "Depends on the layer"
+        ],
+        correct: 0
+      },
+      {
+        question: "Refinement in modeling means to remove an element without replacing it.",
+        answers: [
+          "True",
+          "False",
+          "Sometimes",
+          "Depends on context"
+        ],
+        correct: 1
+      },
+      {
+        question: "Response time is measured from a customer/user perspective.",
+        answers: [
+          "True",
+          "False",
+          "Depends on process",
+          "Depends on system"
+        ],
+        correct: 0
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let selectedAnswer = null;
+
+    function startQuiz() {
+      currentQuestion = 0;
+      score = 0;
+      selectedAnswer = null;
+      
+      document.getElementById('startScreen').classList.add('hidden');
+      document.getElementById('quizScreen').classList.remove('hidden');
+      document.getElementById('resultsScreen').classList.add('hidden');
+      
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+      document.getElementById('currentQ').textContent = currentQuestion + 1;
+      document.getElementById('totalQ').textContent = questions.length;
+      document.getElementById('questionText').textContent = q.question;
+      document.getElementById('correctAnswerBox').classList.add('hidden');
+      
+      const container = document.getElementById('answersContainer');
+      container.innerHTML = '';
+      
+      q.answers.forEach((answer, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.onclick = () => selectAnswer(index);
+        btn.innerHTML = `
+          <span class="answer-number">${String.fromCharCode(65 + index)}</span>
+          <span>${answer}</span>
+        `;
+        container.appendChild(btn);
+      });
+      
+      selectedAnswer = null;
+    }
+
+    function selectAnswer(index) {
+      if (selectedAnswer !== null) return;
+      
+      selectedAnswer = index;
+      const buttons = document.querySelectorAll('.answer-btn');
+      const correctIndex = questions[currentQuestion].correct;
+      
+      buttons.forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === correctIndex) {
+          btn.classList.add('correct');
+        } else if (i === selectedAnswer) {
+          btn.classList.add('incorrect');
+        } else {
+          btn.classList.add('neutral');
+        }
+      });
+      
+      if (index === correctIndex) {
+        score++;
+      }
+      
+      // Show the correct answer
+      const correctAnswerBox = document.getElementById('correctAnswerBox');
+      const correctAnswerText = document.getElementById('correctAnswerText');
+      correctAnswerText.textContent = questions[currentQuestion].answers[correctIndex];
+      correctAnswerBox.classList.remove('hidden');
+      
+      setTimeout(() => {
+        if (currentQuestion < questions.length - 1) {
+          currentQuestion++;
+          loadQuestion();
+        } else {
+          showResults();
+        }
+      }, 1500);
+    }
+
+    function showResults() {
+      document.getElementById('quizScreen').classList.add('hidden');
+      document.getElementById('resultsScreen').classList.remove('hidden');
+      
+      const percentage = Math.round((score / questions.length) * 100);
+      document.getElementById('percentageScore').textContent = percentage + '%';
+      document.getElementById('correctScore').textContent = score;
+      document.getElementById('totalScore').textContent = questions.length;
+    }
+
+    function tryAgain() {
+      document.getElementById('resultsScreen').classList.add('hidden');
+      document.getElementById('startScreen').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
